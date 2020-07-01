@@ -1,0 +1,89 @@
+@model MvcSM.Models.Student
+
+@{
+    ViewData["Title"] = "Add a new Student";
+}
+
+<div class="row">
+  <div class="col-md-4" style="margin: 0 auto;">
+    <h2>Add a new student</h1>
+    <h3>Student</h4>
+    <hr />
+    <form asp-action="Create" id="form-create">
+      <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+      <div class="form-group">
+          <label asp-for="Name" class="control-label"></label>
+          <input asp-for="Name" class="form-control input txtName" />
+          <span asp-validation-for="Name" class="text-danger name"></span>
+           
+      </div>
+      <div class="form-group">
+          <label asp-for="DOB" class="control-label"></label>
+          <input asp-for="DOB" class="form-control input dob"  id= "id_dateOfBirth"/>
+          <span asp-validation-for="DOB" class="text-danger dob">@ViewBag.doberror</span>
+      </div>
+      <div class="form-group">
+          <label asp-for="Address" class="control-label"></label>
+          <input asp-for="Address" class="form-control input" />
+          <span asp-validation-for="Address" class="text-danger address"></span>
+      </div>
+      <div class="form-group">
+          <label asp-for="Email" class="control-label"></label>
+          <input asp-for="Email" class="form-control input" />
+          <span asp-validation-for="Email" class="text-danger email"></span>
+      </div>
+      <div class="form-group">
+          <label asp-for="Major" class="control-label"></label>
+          <input asp-for="Major" class="form-control input" />
+          <span asp-validation-for="Major" class="text-danger major"></span>
+      </div>
+      <div class="form-group">
+          <input type="submit" value="Add" class="btn btn-primary" id="btn-submit" style="width: 100%;" />
+      </div>
+    </form>
+     <div>
+      <a asp-action="Index">Back to List</a>
+    </div>
+  </div>
+ 
+</div>
+<script>
+   
+        $(document).ready( function(){
+            console.log( "ready!" );
+            $(".input").on('blur', function () {    
+                var name =  $(".txtName").val();
+                var date = new Date($('.dob').val());
+                day = date.getDate();
+                month = date.getMonth() + 1;
+                year = date.getFullYear();
+                var dob = [month, day, year].join('/'); 
+                function checkAllNull(e){
+                    return e == null;
+                }
+                $.ajax({    
+                    url: "https://localhost:5001/Student/checkData?name="+name+"&dob="+dob,    
+                    type: "POST",    
+                    success: function (result) {    
+                        console.log(result);
+                        $(".name").text(result[0]);
+                        $(".dob").text(result[1]);
+                        $('input[type="submit"]').prop('disabled', true);
+                        if(result.every(checkAllNull))  {
+                            $('input[type="submit"]').prop('disabled', false);
+                        }
+                    },    
+                    error: function () {    
+                        console.log("fail");        
+                    }    
+                });         
+            });
+        });
+    
+
+
+  
+</script>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
